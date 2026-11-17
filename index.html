@@ -1,0 +1,1226 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+<meta charset="UTF-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<title>HBD Chahak Maheshwari</title> 
+<link rel="preconnect" href="https://fonts.googleapis.com"> 
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&family=Pacifico&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet"> 
+<style> 
+  :root { 
+    --yellow-stripe: #FFF8B8; 
+    --cream-stripe: #FFFDF5; 
+    --lavender: #B69CE8; 
+    --lavender-light: #CDB8F6; 
+    --lavender-dark: #8C6EC9; 
+    --gold-star: #FFD13B; 
+    --purple-star: #B595EC; 
+    --pink-star: #FFB5C5; 
+    --mint-star: #98E2C6; 
+    --ink-brown: #5B2C16; 
+  } 
+
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    user-select: none; 
+  } 
+
+  html, body { 
+    width: 100vw; 
+    height: 100vh; 
+    overflow: hidden; 
+    font-family: 'Fredoka', cursive, sans-serif; 
+    background-color: var(--cream-stripe); 
+  } 
+
+  /* Full-Screen Striped Scrapbook Canvas */ 
+  .canvas { 
+    width: 100vw; 
+    height: 100vh; 
+    position: relative; 
+    overflow: hidden; 
+    background-image: repeating-linear-gradient( 
+      90deg, 
+      var(--yellow-stripe) 0px, 
+      var(--yellow-stripe) 28px, 
+      var(--cream-stripe) 28px, 
+      var(--cream-stripe) 56px 
+    ); 
+  } 
+
+  /* Torn Crumpled Paper Corners */ 
+  .torn-corner-tl { 
+    position: absolute; 
+    top: -12px; 
+    left: -12px; 
+    width: 310px; 
+    height: 270px; 
+    background: radial-gradient(circle at 30% 30%, #D9C6FF, #B89DF2 70%, #9F81E0); 
+    clip-path: polygon(0 0, 100% 0, 88% 12%, 75% 24%, 64% 38%, 49% 47%, 35% 63%, 22% 78%, 11% 92%, 0 100%); 
+    filter: drop-shadow(3px 5px 6px rgba(100, 70, 150, 0.22)); 
+    z-index: 2; 
+    pointer-events: none; 
+  } 
+  .torn-corner-tl::after { 
+    content: ""; 
+    position: absolute; 
+    inset: 0; 
+    background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.12) 0px, rgba(255,255,255,0.12) 4px, transparent 4px, transparent 12px), 
+                      repeating-linear-gradient(-30deg, rgba(90,50,150,0.08) 0px, rgba(90,50,150,0.08) 3px, transparent 3px, transparent 10px); 
+  } 
+
+  .torn-corner-br { 
+    position: absolute; 
+    bottom: -12px; 
+    right: -12px; 
+    width: 340px; 
+    height: 290px; 
+    background: radial-gradient(circle at 70% 70%, #D9C6FF, #B89DF2 70%, #9F81E0); 
+    clip-path: polygon(100% 0, 88% 12%, 76% 26%, 68% 43%, 52% 56%, 41% 71%, 25% 84%, 10% 93%, 0 100%, 100% 100%); 
+    filter: drop-shadow(-3px -4px 6px rgba(100, 70, 150, 0.22)); 
+    z-index: 2; 
+    pointer-events: none; 
+  } 
+  .torn-corner-br::after { 
+    content: ""; 
+    position: absolute; 
+    inset: 0; 
+    background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,0.12) 0px, rgba(255,255,255,0.12) 4px, transparent 4px, transparent 12px), 
+                      repeating-linear-gradient(30deg, rgba(90,50,150,0.08) 0px, rgba(90,50,150,0.08) 3px, transparent 3px, transparent 10px); 
+  } 
+
+  /* Decorative Stars Layer */ 
+  .stars-layer { 
+    position: absolute; 
+    inset: 0; 
+    pointer-events: none; 
+    z-index: 3; 
+  } 
+
+  .star { 
+    position: absolute; 
+    font-size: 26px; 
+    animation: twinkle 2.8s infinite ease-in-out alternate; 
+  } 
+
+  @keyframes twinkle { 
+    0% { transform: scale(0.9) rotate(-6deg); opacity: 0.85; } 
+    100% { transform: scale(1.14) rotate(8deg); opacity: 1; } 
+  } 
+
+  /* Screens Management */ 
+  .screen { 
+    position: absolute; 
+    inset: 0; 
+    display: none; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 10; 
+    padding: 24px; 
+    animation: fadeIn 0.4s ease; 
+  } 
+
+  .screen.active { 
+    display: flex; 
+  } 
+
+  @keyframes fadeIn { 
+    from { opacity: 0; transform: scale(0.98); } 
+    to { opacity: 1; transform: scale(1); } 
+  } 
+
+  /* ================= SCREEN 1: PASSCODE ================= */ 
+  #screen-passcode { 
+    flex-direction: row; 
+    padding: 0; 
+  } 
+
+  .passcode-left { 
+    width: 50%; 
+    height: 100%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    position: relative; 
+    z-index: 5; 
+  } 
+
+  /* Organic Cloud / Blob Shape for Passcode Photo */ 
+  .blob-frame-1 { 
+    width: min(380px, 38vw); 
+    height: min(380px, 38vw); 
+    background: #C4AEF2; 
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    box-shadow: 0 14px 32px rgba(130, 95, 190, 0.28); 
+    border: 7px solid #FFFFFF; 
+    overflow: hidden; 
+    position: relative; 
+  } 
+
+  .blob-frame-1 img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+  } 
+
+  .passcode-right { 
+    width: 50%; 
+    height: 100%; 
+    background: linear-gradient(135deg, #C7B1F4 0%, #B498EC 55%, #A787E4 100%); 
+    clip-path: polygon(5% 0%, 100% 0%, 100% 100%, 3% 100%, 0% 88%, 4% 76%, 1% 63%, 5% 51%, 1% 38%, 4% 25%, 1% 12%); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 24px 36px 24px 52px; 
+    position: relative; 
+    z-index: 6; 
+    box-shadow: -8px 0 24px rgba(90, 60, 140, 0.16); 
+  } 
+
+  .passcode-title { 
+    color: #FFFFFF; 
+    font-size: 34px; 
+    font-weight: 700; 
+    margin-bottom: 20px; 
+    text-shadow: 0 2px 4px rgba(100, 65, 160, 0.25); 
+    letter-spacing: 0.5px; 
+  } 
+
+  .passcode-boxes { 
+    display: flex; 
+    gap: 14px; 
+    margin-bottom: 28px; 
+  } 
+
+  .code-box { 
+    width: 58px; 
+    height: 58px; 
+    border: 4px solid #FFFFFF; 
+    border-radius: 12px; 
+    background: rgba(255, 255, 255, 0.18); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 36px; 
+    color: var(--yellow-stripe); 
+    font-weight: 700; 
+    transition: transform 0.15s ease, background 0.2s; 
+  } 
+
+  .code-box.filled { 
+    background: rgba(255, 255, 255, 0.35); 
+    transform: scale(1.06); 
+  } 
+
+  .keypad { 
+    display: grid; 
+    grid-template-columns: repeat(3, 76px); 
+    gap: 16px 24px; 
+  } 
+
+  .key-btn { 
+    width: 76px; 
+    height: 76px; 
+    border-radius: 50%; 
+    background: #FFFFFF; 
+    border: none; 
+    color: #7D3319; 
+    font-family: 'Fredoka', sans-serif; 
+    font-size: 33px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    box-shadow: 0 5px 0 rgba(120, 80, 175, 0.3); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    transition: transform 0.1s, box-shadow 0.1s, background 0.15s; 
+  } 
+
+  .key-btn span { 
+    text-decoration: underline; 
+    text-decoration-thickness: 2.5px; 
+    text-underline-offset: 3px; 
+  } 
+
+  .key-btn.no-underline span { 
+    text-decoration: none; 
+  } 
+
+  .key-btn:hover { 
+    background: #FFFDF2; 
+    transform: translateY(-2px); 
+  } 
+
+  .key-btn:active { 
+    transform: translateY(2px); 
+    box-shadow: 0 1px 0 rgba(120, 80, 175, 0.3); 
+  } 
+
+  .passcode-hint { 
+    margin-top: 18px; 
+    font-size: 14px; 
+    color: rgba(255, 255, 255, 0.92); 
+    font-family: 'Nunito', sans-serif; 
+    font-weight: 700; 
+  } 
+
+  /* ================= COMMON COLLAGE TYPOGRAPHY & BUTTONS ================= */ 
+  .lavender-heading { 
+    color: #A88CE2; 
+    font-size: clamp(32px, 4.2vw, 48px); 
+    font-weight: 700; 
+    text-align: center; 
+    line-height: 1.25; 
+    text-shadow: 2px 2px 0px #FFFFFF, -1px -1px 0px #FFFFFF; 
+    margin-bottom: 20px; 
+    z-index: 10; 
+  } 
+
+  .pill-btn { 
+    background: #B99FF0; 
+    color: #FFFFFF; 
+    border: 4px solid #FFFFFF; 
+    border-radius: 999px; 
+    padding: 14px 52px; 
+    font-family: 'Fredoka', sans-serif; 
+    font-size: clamp(28px, 3.2vw, 40px); 
+    font-weight: 700; 
+    cursor: pointer; 
+    box-shadow: 0 8px 18px rgba(145, 110, 210, 0.32); 
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s; 
+    text-decoration: underline; 
+    text-decoration-thickness: 3px; 
+    text-underline-offset: 5px; 
+  } 
+
+  .pill-btn:hover { 
+    transform: scale(1.07) rotate(-1deg); 
+    background: #A789E8; 
+  } 
+
+  .pill-btn:active { 
+    transform: scale(0.96); 
+  } 
+
+  .btn-row { 
+    display: flex; 
+    gap: 42px; 
+    margin-top: 16px; 
+  } 
+
+  /* Non-circular Polaroid / Slanted Photo Frame */ 
+  .polaroid-frame { 
+    background: #FFFFFF; 
+    padding: 14px 14px 38px 14px; 
+    border-radius: 6px; 
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18); 
+    transform: rotate(-3deg); 
+    transition: transform 0.25s ease; 
+    margin-bottom: 12px; 
+  } 
+  .polaroid-frame:hover { 
+    transform: scale(1.05) rotate(1deg); 
+  } 
+  .polaroid-img { 
+    width: 250px; 
+    height: 220px; 
+    object-fit: cover; 
+    border-radius: 3px; 
+  } 
+
+  /* Circular "Next" Badge in Bottom Right */ 
+  .next-circle-btn { 
+    position: absolute; 
+    bottom: 26px; 
+    right: 30px; 
+    width: 106px; 
+    height: 106px; 
+    border-radius: 50%; 
+    background: #F4E9CE; 
+    border: 3px dashed #C3A9E8; 
+    color: #7958B8; 
+    font-family: 'Pacifico', cursive; 
+    font-size: 30px; 
+    cursor: pointer; 
+    z-index: 20; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    box-shadow: 0 6px 16px rgba(100, 70, 150, 0.22); 
+    transition: transform 0.2s ease, background 0.2s; 
+    text-decoration: underline; 
+    text-underline-offset: 4px; 
+  } 
+
+  .next-circle-btn:hover { 
+    transform: scale(1.1) rotate(5deg); 
+    background: #FFF7E2; 
+  } 
+
+  /* ================= SCREEN 3: HOW DARE YOU ================= */ 
+  .anger-mark { 
+    position: absolute; 
+    top: -10px; 
+    right: 0px; 
+    font-size: 46px; 
+    animation: pulseAngry 0.6s infinite alternate; 
+  } 
+
+  @keyframes pulseAngry { 
+    from { transform: scale(0.9); } 
+    to { transform: scale(1.25); } 
+  } 
+
+  /* ================= SCREEN 4: THAT'S A GOOD BOY ================= */ 
+  .star-badge-frame { 
+    width: 260px; 
+    height: 260px; 
+    background: #FFD13B; 
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    margin-bottom: 12px; 
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); 
+  } 
+  .star-badge-inner { 
+    width: 230px; 
+    height: 230px; 
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); 
+    background: #FFF; 
+  } 
+  .star-badge-inner img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+  } 
+
+  .good-boy-row { 
+    display: flex; 
+    align-items: center; 
+    gap: 14px; 
+    margin-bottom: 14px; 
+  } 
+
+  /* ================= SCREEN 5: HAPPY BIRTHDAY COLLAGE ================= */ 
+  .ransom-word { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px; 
+    z-index: 12; 
+  } 
+
+  .ransom-letter { 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 5px 15px; 
+    font-weight: 800; 
+    box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.16); 
+    border: 2px solid rgba(255, 255, 255, 0.85); 
+    line-height: 1.05; 
+  } 
+
+  /* Digital Camera Frame */ 
+  .digicam-body { 
+    width: min(440px, 86vw); 
+    height: 260px; 
+    background: linear-gradient(180deg, #F3F3F5 0%, #D9DADE 50%, #C4C5CA 100%); 
+    border-radius: 28px; 
+    border: 3px solid #A8A9AE; 
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22), inset 0 2px 4px #FFFFFF; 
+    position: relative; 
+    display: flex; 
+    align-items: center; 
+    padding: 18px 22px; 
+    gap: 18px; 
+    margin: 12px 0; 
+    z-index: 12; 
+  } 
+
+  .digicam-screen { 
+    width: 265px; 
+    height: 205px; 
+    background: #222; 
+    border: 4px solid #6E7075; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    position: relative; 
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6); 
+  } 
+
+  .digicam-screen img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+  } 
+
+  .favorite-tag { 
+    position: absolute; 
+    bottom: 8px; 
+    right: 8px; 
+    background: #E8D5B7; 
+    color: #5B2C16; 
+    font-family: 'Caveat', cursive; 
+    font-size: 18px; 
+    font-weight: 700; 
+    padding: 2px 10px; 
+    border-radius: 8px; 
+    border: 1.5px solid #8C6239; 
+    transform: rotate(-4deg); 
+  } 
+
+  .digicam-controls { 
+    flex: 1; 
+    height: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 8px 0; 
+  } 
+
+  .digicam-viewfinder { 
+    width: 48px; 
+    height: 28px; 
+    background: #333; 
+    border-radius: 5px; 
+    border: 2px solid #888; 
+  } 
+
+  .digicam-dial { 
+    width: 74px; 
+    height: 74px; 
+    border-radius: 50%; 
+    background: radial-gradient(circle, #FFFFFF 28%, #B8B9BE 32%, #E5E6EA 65%, #999 100%); 
+    border: 2px solid #8E9096; 
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+  } 
+
+  .digicam-dial-inner { 
+    width: 26px; 
+    height: 26px; 
+    border-radius: 50%; 
+    background: #D0D1D6; 
+    border: 1px solid #888; 
+  } 
+
+  .party-hat-sticker { 
+    position: absolute; 
+    top: -30px; 
+    right: 110px; 
+    font-size: 56px; 
+    transform: rotate(22deg); 
+    z-index: 15; 
+    filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.2)); 
+  } 
+
+  /* ================= SCREEN 6: CLICK ON EACH ITEM ================= */ 
+  .items-row { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 64px; 
+    margin-top: 24px; 
+    z-index: 12; 
+    flex-wrap: wrap; 
+  } 
+
+  .item-card { 
+    cursor: pointer; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); 
+    position: relative; 
+    filter: drop-shadow(0 0 3px #FFFFFF) drop-shadow(0 8px 14px rgba(0, 0, 0, 0.15)); 
+  } 
+
+  .item-card:hover { 
+    transform: translateY(-12px) scale(1.08) rotate(-2deg); 
+  } 
+
+  .item-label { 
+    margin-top: 12px; 
+    background: #FFFFFF; 
+    color: #8C6EC9; 
+    padding: 5px 16px; 
+    border-radius: 999px; 
+    font-size: 18px; 
+    font-weight: 700; 
+    box-shadow: 0 3px 8px rgba(120, 90, 180, 0.2); 
+  } 
+
+  /* ================= SCREEN 7: MEMORIES (GOOGLE SEARCH STYLE) ================= */ 
+  .google-memories-title { 
+    font-family: 'Nunito', sans-serif; 
+    font-size: clamp(44px, 5vw, 64px); 
+    font-weight: 800; 
+    letter-spacing: -1.5px; 
+    margin-bottom: 10px; 
+    z-index: 12; 
+    text-shadow: 2px 2px 0 #FFFFFF; 
+  } 
+
+  .g-blue { color: #4285F4; } 
+  .g-red { color: #EA4335; } 
+  .g-yellow { color: #FBBC05; } 
+  .g-green { color: #34A853; } 
+
+  .search-pill { 
+    width: 85%; 
+    max-width: 680px; 
+    height: 48px; 
+    background: #FFFFFF; 
+    border: 2px solid #DCDFE4; 
+    border-radius: 999px; 
+    display: flex; 
+    align-items: center; 
+    padding: 0 20px; 
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07); 
+    margin-bottom: 12px; 
+    z-index: 12; 
+  } 
+
+  .search-text { 
+    flex: 1; 
+    font-family: 'Nunito', sans-serif; 
+    font-size: 18px; 
+    font-weight: 700; 
+    color: #3C4043; 
+    margin-left: 10px; 
+  } 
+
+  .search-tabs { 
+    display: flex; 
+    gap: 28px; 
+    font-family: 'Nunito', sans-serif; 
+    font-size: 15px; 
+    font-weight: 800; 
+    color: #5F6368; 
+    margin-bottom: 16px; 
+    z-index: 12; 
+  } 
+
+  .search-tab.active-tab { 
+    color: #EA4335; 
+    border-bottom: 3px solid #EA4335; 
+    padding-bottom: 3px; 
+  } 
+
+  .memories-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 16px; 
+    width: 82%; 
+    max-width: 720px; 
+    z-index: 12; 
+  } 
+
+  .memory-photo { 
+    aspect-ratio: 16 / 10; 
+    border-radius: 10px; 
+    overflow: hidden; 
+    border: 5px solid #FFFFFF; 
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.16); 
+    background: #EEE; 
+    transition: transform 0.2s ease; 
+    cursor: pointer; 
+  } 
+
+  .memory-photo:hover { 
+    transform: scale(1.06) rotate(1deg); 
+    z-index: 20; 
+  } 
+
+  .memory-photo img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+  } 
+
+  .yellow-arrow-btn { 
+    position: absolute; 
+    bottom: 24px; 
+    right: 30px; 
+    background: none; 
+    border: none; 
+    font-size: 62px; 
+    color: #FFE45E; 
+    cursor: pointer; 
+    z-index: 25; 
+    filter: drop-shadow(0 3px 5px rgba(100, 70, 150, 0.35)); 
+    transition: transform 0.2s; 
+  } 
+
+  .yellow-arrow-btn:hover { 
+    transform: translateX(6px) scale(1.1); 
+  } 
+
+  /* ================= SCREEN 8: LOVE / BIRTHDAY LETTER ================= */ 
+  .letter-wrapper { 
+    position: relative; 
+    width: 86%; 
+    max-width: 680px; 
+    z-index: 12; 
+  } 
+
+  .letter-paper { 
+    width: 100%; 
+    background: #FFFDF8; 
+    background-image: repeating-linear-gradient( 
+      transparent, 
+      transparent 33px, 
+      #E3D7FA 33px, 
+      #E3D7FA 34px 
+    ); 
+    border-radius: 16px; 
+    padding: 36px 44px 32px; 
+    box-shadow: 0 14px 32px rgba(110, 75, 170, 0.22), 0 0 0 6px #FFFFFF; 
+    position: relative; 
+    transform: rotate(-0.6deg); 
+  } 
+
+  .washi-tape { 
+    position: absolute; 
+    top: -14px; 
+    left: 50%; 
+    transform: translateX(-50%) rotate(2deg); 
+    width: 150px; 
+    height: 28px; 
+    background: rgba(255, 214, 102, 0.85); 
+    border-left: 3px dashed rgba(255,255,255,0.7); 
+    border-right: 3px dashed rgba(255,255,255,0.7); 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+  } 
+
+  .letter-header { 
+    font-family: 'Caveat', cursive; 
+    font-size: 36px; 
+    font-weight: 700; 
+    color: #8C6EC9; 
+    margin-bottom: 10px; 
+  } 
+
+  .letter-body { 
+    font-family: 'Caveat', cursive; 
+    font-size: 27px; 
+    line-height: 34px; 
+    color: #4A3B5C; 
+  } 
+
+  .letter-sign { 
+    margin-top: 16px; 
+    font-family: 'Caveat', cursive; 
+    font-size: 30px; 
+    font-weight: 700; 
+    color: #D96B8A; 
+    text-align: right; 
+  } 
+
+  /* ================= SCREEN 9: MIXTAPE / CASSETTE PLAYER ================= */ 
+  .cassette-player-card { 
+    background: #FFFFFF; 
+    border-radius: 26px; 
+    padding: 28px 36px; 
+    box-shadow: 0 14px 32px rgba(110, 75, 170, 0.22); 
+    border: 5px solid #CDB8F6; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    z-index: 12; 
+    max-width: 540px; 
+    width: 90%; 
+    position: relative; 
+  } 
+
+  .spinning { 
+    animation: spinReel 2.5s linear infinite; 
+    transform-origin: center; 
+  } 
+
+  @keyframes spinReel { 
+    from { transform: rotate(0deg); } 
+    to { transform: rotate(360deg); } 
+  } 
+
+  .play-music-btn { 
+    margin-top: 16px; 
+    background: #FF8FAB; 
+    color: #FFFFFF; 
+    border: none; 
+    border-radius: 999px; 
+    padding: 12px 30px; 
+    font-family: 'Fredoka', sans-serif; 
+    font-size: 21px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    box-shadow: 0 4px 12px rgba(255, 117, 143, 0.35); 
+    transition: transform 0.15s; 
+  } 
+
+  .play-music-btn:hover { 
+    transform: scale(1.06); 
+  } 
+
+  @media (max-width: 768px) { 
+    #screen-passcode { flex-direction: column; } 
+    .passcode-left, .passcode-right { width: 100%; height: 50%; clip-path: none; padding: 10px; } 
+    .blob-frame-1 { width: 190px; height: 190px; } 
+    .keypad { grid-template-columns: repeat(3, 54px); gap: 10px 14px; } 
+    .key-btn { width: 54px; height: 54px; font-size: 24px; } 
+    .items-row { gap: 20px; } 
+    .memories-grid { grid-template-columns: repeat(2, 1fr); } 
+  } 
+</style> 
+</head> 
+<body> 
+
+<div class="canvas"> 
+  <!-- Torn Paper Corners (shown after Passcode screen) --> 
+  <div class="torn-corner-tl" id="corner-tl" style="display:none;"></div> 
+  <div class="torn-corner-br" id="corner-br" style="display:none;"></div> 
+
+  <!-- Floating Decorative Stars --> 
+  <div class="stars-layer" id="stars-layer"></div> 
+
+  <!-- ==================== 1. PASSCODE SCREEN ==================== --> 
+  <div class="screen active" id="screen-passcode"> 
+    <div class="passcode-left"> 
+      <div class="blob-frame-1"> 
+        <img src="https://i.pinimg.com/736x/fb/58/1e/fb581e0d6f0d98473aa401c0f2bfdd10.jpg" alt="I love you darlin"> 
+      </div> 
+    </div> 
+
+    <div class="passcode-right"> 
+      <div class="passcode-title">Enter a passcode</div> 
+      <div class="passcode-boxes" id="passcode-boxes"> 
+        <div class="code-box" id="box-0"></div> 
+        <div class="code-box" id="box-1"></div> 
+        <div class="code-box" id="box-2"></div> 
+        <div class="code-box" id="box-3"></div> 
+      </div> 
+
+      <div class="keypad"> 
+        <button class="key-btn" onclick="pressKey('1')"><span>1</span></button> 
+        <button class="key-btn" onclick="pressKey('8')"><span>8</span></button> 
+        <button class="key-btn" onclick="pressKey('1')"><span>1</span></button> 
+        <button class="key-btn" onclick="pressKey('1')"><span>1</span></button> 
+        <button class="key-btn" onclick="pressKey('5')"><span>5</span></button> 
+        <button class="key-btn" onclick="pressKey('6')"><span>6</span></button> 
+        <button class="key-btn" onclick="pressKey('7')"><span>7</span></button> 
+        <button class="key-btn" onclick="pressKey('8')"><span>8</span></button> 
+        <button class="key-btn" onclick="pressKey('9')"><span>9</span></button> 
+        <button class="key-btn no-underline" onclick="clearCode()"><span>*</span></button> 
+        <button class="key-btn" onclick="pressKey('0')"><span>0</span></button> 
+        <button class="key-btn no-underline" onclick="pressKey('#')"><span>#</span></button> 
+      </div> 
+      <div class="passcode-hint">Hint: Kuch bhi likhdo, aapka kaha toh sab sahi hota hai✨</div> 
+    </div> 
+  </div> 
+
+  <!-- ==================== 2. YES OR NO SCREEN ==================== --> 
+  <div class="screen" id="screen-yesno"> 
+    <div class="lavender-heading"> 
+      Hey ! I made something for you<br> 
+      do you wanna see it? 
+    </div> 
+
+    <div class="polaroid-frame"> 
+      <img class="polaroid-img" src="https://i.pinimg.com/736x/80/d6/a1/80d6a1e39903944e9bdf860c72176443.jpg" alt="Randi Billi"> 
+    </div> 
+
+    <div class="btn-row"> 
+      <button class="pill-btn" onclick="goToScreen('screen-goodboy')">Yes</button> 
+      <button class="pill-btn" onclick="goToScreen('screen-howdare')">No</button> 
+    </div> 
+  </div> 
+
+  <!-- ==================== 3. HOW DARE YOU SCREEN ==================== --> 
+  <div class="screen" id="screen-howdare"> 
+    <div class="lavender-heading"> 
+      SERIOUSLY!? come on yawrrrr 
+    </div> 
+
+    <div style="position:relative; display:inline-block; margin-bottom:12px;"> 
+      <div class="polaroid-frame" style="transform: rotate(3deg);"> 
+        <img class="polaroid-img" src="https://i.pinimg.com/736x/31/3f/a3/313fa30ff4ded888fb7edc53c5b0f305.jpg" alt="amma chod de lib"> 
+      </div> 
+      <div class="anger-mark">💢</div> 
+    </div> 
+
+    <button class="pill-btn" onclick="goToScreen('screen-yesno')" style="margin-top: 16px;">Go back</button> 
+  </div> 
+
+  <!-- ==================== 4. THAT'S A GOOD BOY SCREEN ==================== --> 
+  <div class="screen" id="screen-goodboy"> 
+    <div class="star-badge-frame"> 
+      <div class="star-badge-inner"> 
+        <img src="https://i.pinimg.com/736x/1c/26/31/1c26318c2f3082e016607b00067f47b1.jpg" alt="bhenkilodi maan gyi"> 
+      </div> 
+    </div> 
+
+    <div class="good-boy-row"> 
+      <div class="lavender-heading" style="margin-bottom: 0;">Awwh! You are the best!</div> 
+      <span style="font-size: 50px;">🌻</span> 
+    </div> 
+
+    <button class="pill-btn" onclick="goToScreen('screen-birthday')">Click</button> 
+  </div> 
+
+  <!-- ==================== 5. HAPPY BIRTHDAY COLLAGE SCREEN ==================== --> 
+  <div class="screen" id="screen-birthday"> 
+    <!-- Ransom Note "HappYy" --> 
+    <div class="ransom-word" style="margin-bottom: 6px;"> 
+      <span class="ransom-letter" style="background:#F4A7B9; color:#FFF59D; font-family:'Playfair Display',serif; font-size:48px; transform:rotate(-4deg);">H</span> 
+      <span class="ransom-letter" style="background:#FAF3DD; color:#1D4E5F; font-family:'Playfair Display',serif; font-size:44px; transform:rotate(3deg);">a</span> 
+      <span class="ransom-letter" style="background:#FFF394; color:#8C6EC9; font-family:'Nunito',sans-serif; font-size:46px; transform:rotate(-2deg);">P</span> 
+      <span class="ransom-letter" style="background:#C28CAE; color:#FFFFFF; font-family:'Fredoka',sans-serif; font-size:46px; transform:rotate(4deg);">P</span> 
+      <span class="ransom-letter" style="background:#A6C1B9; color:#F59E0B; font-family:'Playfair Display',serif; font-size:48px; transform:rotate(-3deg);">Y</span> 
+      <span class="ransom-letter" style="background:#FFF394; color:#7958B8; font-family:'Pacifico',cursive; font-size:42px; transform:rotate(6deg);">y</span> 
+    </div> 
+
+    <!-- Digital Camera with Photo & Party Hat --> 
+    <div class="digicam-body"> 
+      <div class="party-hat-sticker">🥳</div> 
+      <div class="digicam-screen"> 
+        <img id="birthday-hero-photo" src="https://i.ibb.co/S4n6DHyW/Whats-App-Image-2026-11-17-at-11-21-59-PM.jpg" alt="Birthday Favorite Person"> 
+        <div class="favorite-tag">kaju katli ⤵</div> 
+      </div> 
+      <div class="digicam-controls"> 
+        <div class="digicam-viewfinder"></div> 
+        <div class="digicam-dial"> 
+          <div class="digicam-dial-inner"></div> 
+        </div> 
+        <div style="font-size: 18px; color: #D94E67;">💖 ✨</div> 
+      </div> 
+    </div> 
+
+    <!-- Ransom Note "BiRthdaY" --> 
+    <div class="ransom-word" style="margin-top: 6px;"> 
+      <span class="ransom-letter" style="background:#B589A6; color:#FFFFFF; font-family:'Fredoka',sans-serif; font-size:46px; transform:rotate(-3deg);">B</span> 
+      <span class="ransom-letter" style="background:#FBE4EC; color:#C28CAE; font-family:'Playfair Display',serif; font-size:46px; transform:rotate(2deg);">i</span> 
+      <span class="ransom-letter" style="background:#F7EFE2; color:#F4A261; font-family:'Fredoka',sans-serif; font-size:48px; transform:rotate(-4deg);">R</span> 
+      <span class="ransom-letter" style="background:#FFF394; color:#9C7CE0; font-family:'Nunito',sans-serif; font-size:44px; transform:rotate(3deg);">t</span> 
+      <span class="ransom-letter" style="background:#B69CE8; color:#FFF8B8; font-family:'Fredoka',sans-serif; font-size:48px; transform:rotate(-2deg);">h</span> 
+      <span class="ransom-letter" style="background:#9BBEC7; color:#FFFFFF; font-family:'Playfair Display',serif; font-size:46px; transform:rotate(4deg);">d</span> 
+      <span class="ransom-letter" style="background:#C28CAE; color:#FFFFFF; font-family:'Nunito',sans-serif; font-size:46px; transform:rotate(-3deg);">A</span> 
+      <span class="ransom-letter" style="background:#F4C2C2; color:#A8DADC; font-family:'Fredoka',sans-serif; font-size:48px; transform:rotate(5deg);">Y</span> 
+    </div> 
+
+    <button class="next-circle-btn" onclick="goToScreen('screen-items')">Next</button> 
+  </div> 
+
+  <!-- ==================== 6. CLICK ON EACH ITEM TO OPEN ==================== --> 
+  <div class="screen" id="screen-items"> 
+    <div class="lavender-heading" style="margin-bottom: 12px;"> 
+      click on each item to open 
+    </div> 
+
+    <div class="items-row"> 
+      <!-- Item 1: Yellow 3D Retro Camera -> Photos --> 
+      <div class="item-card" onclick="goToScreen('screen-memories')"> 
+        <svg viewBox="0 0 180 155" width="190" height="162"> 
+          <rect x="34" y="14" width="28" height="14" rx="5" fill="#2E2E32"/> 
+          <rect x="122" y="18" width="24" height="10" rx="4" fill="#F4A261"/> 
+          <rect x="14" y="26" width="152" height="114" rx="28" fill="#FFD166"/> 
+          <rect x="14" y="96" width="152" height="44" rx="20" fill="#F7B84B"/> 
+          <rect x="36" y="42" width="32" height="16" rx="5" fill="#3D3D42"/> 
+          <circle cx="142" cy="50" r="10" fill="#FFFDF7" stroke="#E09F3E" stroke-width="3"/> 
+          <circle cx="46" cy="74" r="6" fill="#FFFDF7"/> 
+          <circle cx="96" cy="88" r="38" fill="#F4A261"/> 
+          <circle cx="96" cy="88" r="30" fill="#2B2623"/> 
+          <circle cx="96" cy="88" r="20" fill="#181514"/> 
+          <circle cx="88" cy="80" r="6" fill="rgba(255,255,255,0.28)"/> 
+        </svg> 
+        <div class="item-label">📸 Glam</div> 
+      </div> 
+
+      <!-- Item 2: Lavender Envelope with Pink Heart -> Letter --> 
+      <div class="item-card" onclick="goToScreen('screen-letter')"> 
+        <svg viewBox="0 0 185 165" width="195" height="172"> 
+          <polygon points="16,66 92,12 168,66" fill="#A98CE2"/> 
+          <rect x="34" y="44" width="116" height="82" rx="8" fill="#FFFFFF" stroke="#E6DCFA" stroke-width="2"/> 
+          <line x1="50" y1="62" x2="134" y2="62" stroke="#D8C8F8" stroke-width="4" stroke-linecap="round"/> 
+          <line x1="50" y1="76" x2="115" y2="76" stroke="#D8C8F8" stroke-width="4" stroke-linecap="round"/> 
+          <polygon points="16,66 92,114 16,152" fill="#C4AEF2"/> 
+          <polygon points="168,66 92,114 168,152" fill="#BCA3EE"/> 
+          <polygon points="16,152 92,102 168,152" fill="#CDB8F6"/> 
+          <path d="M92 126 C92 126 74 114 74 103 C74 96 80 92 86 92 C89 92 91 94 92 96 C93 94 95 92 98 92 C104 92 110 96 110 103 C110 114 92 126 92 126 Z" fill="#FFA8B8"/> 
+        </svg> 
+        <div class="item-label">💌 Mail</div> 
+      </div> 
+
+      <!-- Item 3: Retro Mixtape Cassette -> Music --> 
+      <div class="item-card" onclick="goToScreen('screen-mixtape')"> 
+        <svg viewBox="0 0 195 140" width="200" height="145" transform="rotate(3)"> 
+          <rect x="10" y="14" width="175" height="112" rx="12" fill="#1E1E22"/> 
+          <rect x="22" y="24" width="151" height="68" rx="6" fill="#F2C6B6"/> 
+          <rect x="28" y="30" width="14" height="14" rx="2" fill="#1E1E22"/> 
+          <text x="35" y="41" fill="#FFF" font-size="11" font-weight="bold" text-anchor="middle">E</text> 
+          <text x="104" y="41" fill="#5B2C16" font-family="Caveat, cursive" font-size="13" font-weight="bold" text-anchor="middle">Happy Bday Mixtape Vol. 1</text> 
+          <rect x="46" y="48" width="102" height="32" rx="16" fill="#2A2421"/> 
+          <circle cx="64" cy="64" r="12" fill="#F7D6BF" stroke="#1E1E22" stroke-width="2"/> 
+          <circle cx="64" cy="64" r="5" fill="#1E1E22"/> 
+          <circle cx="130" cy="64" r="12" fill="#F7D6BF" stroke="#1E1E22" stroke-width="2"/> 
+          <circle cx="130" cy="64" r="5" fill="#1E1E22"/> 
+          <rect x="82" y="55" width="30" height="18" fill="#4A3F3A"/> 
+          <polygon points="42,126 54,102 140,102 152,126" fill="#333338"/> 
+          <circle cx="97" cy="114" r="4" fill="#F2C6B6"/> 
+        </svg> 
+        <div class="item-label">🎶 Your Fav</div> 
+      </div> 
+    </div> 
+
+    <button class="next-circle-btn" onclick="goToScreen('screen-memories')">Next</button> 
+  </div> 
+
+  <!-- ==================== 7. MEMORIES (GOOGLE PHOTO GRID) ==================== --> 
+  <div class="screen" id="screen-memories"> 
+    <div class="google-memories-title"> 
+      <span class="g-blue">M</span><span class="g-red">e</span><span class="g-yellow">m</span><span class="g-blue">o</span><span class="g-green">r</span><span class="g-red">i</span><span class="g-yellow">e</span><span class="g-blue">s</span> 
+    </div> 
+
+    <div class="search-pill"> 
+      <span style="color:#9AA0A6; font-size:20px;">🔍</span> 
+      <div class="search-text">The Sunshine ❤️</div> 
+      <span style="font-size:20px; margin-right:12px;">🎙️</span> 
+      <span style="font-size:20px;">📷</span> 
+    </div> 
+
+    <div class="search-tabs"> 
+      <span>Dear</span> 
+      <span>Kaju</span> 
+      <span>Katli</span> 
+      <span>I</span> 
+      <span>Love</span> 
+      <span class="search-tab active-tab">You</span> 
+    </div> 
+
+    <div class="memories-grid"> 
+      <div class="memory-photo"> 
+        <img src="https://i.ibb.co/8g2HjhH4/Whats-App-Image-2026-11-17-at-11-22-00-PM-1.jpg" alt="Memory 1"> 
+      </div> 
+      <div class="memory-photo"> 
+        <img src="https://i.ibb.co/mFX7thKB/Screenshot-2026-11-18-001142.png" alt="Memory 2"> 
+      </div> 
+      <div class="memory-photo"> 
+        <img src="https://i.ibb.co/vCpxpzTz/Whats-App-Image-2026-11-17-at-11-21-58-PM-1.jpg" alt="Memory 3"> 
+      </div> 
+      <div class="memory-photo"> 
+        <img src="https://i.ibb.co/1tqpRc0S/Screenshot-2026-11-18-001353.png" alt="Memory 4"> 
+      </div> 
+      <div class="memory-photo"> 
+        <img src="https://i.ibb.co/kVnRHP6Y/Whats-App-Image-2026-11-17-at-11-21-59-PM.jpg" alt="Memory 5"> 
+      </div> 
+      <div class="memory-photo"> 
+        <img src="https://i.ibb.co/N6p04QCg/Screenshot-2026-11-18-001602.png" alt="Memory 6"> 
+      </div> 
+    </div> 
+
+    <button class="yellow-arrow-btn" onclick="goToScreen('screen-items')" title="Back to Items">❯</button> 
+  </div> 
+
+  <!-- ==================== 8. BIRTHDAY LETTER SCREEN ==================== --> 
+  <div class="screen" id="screen-letter"> 
+    <div class="letter-wrapper"> 
+      <div class="letter-paper"> 
+        <div class="washi-tape"></div> 
+        <div class="letter-header">Dear Favorite Person, 💌</div> 
+        <div class="letter-body"> 
+         Happiest birthday my kajukatli ❤️❤️❤️❤️ i am so grateful to have you in my life and I am always by your side no matter what happens and you are the bestest friend i could ever have in my life ❤️❤️. i still remember the way i pick you up from the p4e and went for bowling that day and the way we stand outside the jiwaji university and talked so much i just cant forget these memories with you the day when we talked on the call for the first time and we talked for about 2 hours and the late night chat we do and the nonsence talk we do i just cant forget them and in the end i love you so much my kajukatli❤️❤️❤️❤️❤️❤️ and i am always by your side 🤍🤍
+        </div> 
+        <div class="letter-sign">Forever cheering for you ✨</div> 
+      </div> 
+    </div> 
+
+    <button class="yellow-arrow-btn" onclick="goToScreen('screen-items')" title="Back to Items">❯</button> 
+  </div> 
+
+  <!-- ==================== 9. MIXTAPE PLAYER SCREEN ==================== --> 
+  <div class="screen" id="screen-mixtape"> 
+    <div class="lavender-heading" style="margin-bottom: 14px;"> 
+      Tuada Favorite Gana Paishab 🎶 
+    </div> 
+
+    <div class="cassette-player-card"> 
+      <svg viewBox="0 0 240 155" width="250" height="160"> 
+        <rect x="10" y="10" width="220" height="135" rx="14" fill="#1E1E22"/> 
+        <rect x="24" y="22" width="192" height="84" rx="8" fill="#F2C6B6"/> 
+        <text x="120" y="42" fill="#5B2C16" font-family="Caveat, cursive" font-size="18" font-weight="bold" text-anchor="middle">♪ Rakhlo Tum Chupaake ♪</text> 
+        <rect x="54" y="52" width="132" height="40" rx="20" fill="#2A2421"/> 
+        <g id="reel-left"> 
+          <circle cx="78" cy="72" r="15" fill="#F7D6BF" stroke="#1E1E22" stroke-width="2"/> 
+          <circle cx="78" cy="72" r="6" fill="#1E1E22"/> 
+          <line x1="78" y1="57" x2="78" y2="87" stroke="#1E1E22" stroke-width="2"/> 
+        </g> 
+        <g id="reel-right"> 
+          <circle cx="162" cy="72" r="15" fill="#F7D6BF" stroke="#1E1E22" stroke-width="2"/> 
+          <circle cx="162" cy="72" r="6" fill="#1E1E22"/> 
+          <line x1="162" y1="57" x2="162" y2="87" stroke="#1E1E22" stroke-width="2"/> 
+        </g> 
+        <polygon points="52,145 66,116 174,116 188,145" fill="#333338"/> 
+      </svg> 
+
+      <audio id="birthday-audio" src="rakhlo-tum-chupaake.mp3" preload="metadata"></audio>
+      <button class="play-music-btn" id="music-toggle-btn" onclick="toggleBirthdaySong()">▶ Chalu toh krowww</button> 
+    </div> 
+
+    <button class="yellow-arrow-btn" onclick="goToScreen('screen-items')" title="Back to Items">❯</button> 
+  </div> 
+</div> 
+
+<script> 
+  // Generate Scattered Pastel Stars 
+  const starsLayer = document.getElementById('stars-layer'); 
+  const starPositions = [ 
+    { top: '7%', left: '33%', color: '#B595EC' }, 
+    { top: '9%', left: '49%', color: '#FFD13B' }, 
+    { top: '11%', left: '58%', color: '#B595EC' }, 
+    { top: '12%', left: '73%', color: '#FFD13B' }, 
+    { top: '8%', left: '86%', color: '#B595EC' }, 
+    { top: '38%', left: '22%', color: '#FFD13B' }, 
+    { top: '44%', left: '8%', color: '#B595EC' }, 
+    { top: '35%', left: '36%', color: '#B595EC' }, 
+    { top: '37%', left: '66%', color: '#B595EC' }, 
+    { top: '39%', left: '81%', color: '#FFD13B' }, 
+    { top: '43%', left: '91%', color: '#B595EC' }, 
+    { top: '57%', left: '31%', color: '#FFD13B' }, 
+    { top: '61%', left: '18%', color: '#B595EC' }, 
+    { top: '56%', left: '76%', color: '#B595EC' }, 
+    { top: '82%', left: '9%', color: '#FFD13B' }, 
+    { top: '84%', left: '19%', color: '#B595EC' }, 
+    { top: '86%', left: '65%', color: '#FFD13B' } 
+  ]; 
+
+  starPositions.forEach((pos, idx) => { 
+    const star = document.createElement('div'); 
+    star.className = 'star'; 
+    star.textContent = '★'; 
+    star.style.top = pos.top; 
+    star.style.left = pos.left; 
+    star.style.color = pos.color; 
+    star.style.animationDelay = `${(idx * 0.25) % 2}s`; 
+    starsLayer.appendChild(star); 
+  }); 
+
+  // Passcode Logic 
+  const passcode = '1811'; 
+  let enteredCode = ''; 
+  const boxes = [ 
+    document.getElementById('box-0'), 
+    document.getElementById('box-1'), 
+    document.getElementById('box-2'), 
+    document.getElementById('box-3') 
+  ]; 
+
+  function pressKey(digit) { 
+    if (enteredCode.length >= 4) return; 
+    enteredCode += digit; 
+    updatePasscodeUI(); 
+
+    if (enteredCode.length === 4) { 
+      setTimeout(() => { 
+        if (enteredCode === passcode) { 
+          goToScreen('screen-yesno'); 
+        } else { 
+          // Shake or reset on wrong password 
+          const boxContainer = document.getElementById('passcode-boxes'); 
+          boxContainer.style.transform = 'translateX(10px)'; 
+          setTimeout(() => boxContainer.style.transform = 'translateX(-10px)', 50); 
+          setTimeout(() => boxContainer.style.transform = 'translateX(0)', 100); 
+        } 
+        enteredCode = ''; 
+        updatePasscodeUI(); 
+      }, 300); 
+    } 
+  } 
+
+  function clearCode() { 
+    enteredCode = ''; 
+    updatePasscodeUI(); 
+  } 
+
+  function updatePasscodeUI() { 
+    boxes.forEach((box, idx) => { 
+      if (idx < enteredCode.length) { 
+        box.textContent = '*'; 
+        box.classList.add('filled'); 
+      } else { 
+        box.textContent = ''; 
+        box.classList.remove('filled'); 
+      } 
+    }); 
+  } 
+
+  // Screen Navigation 
+  function goToScreen(screenId) { 
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); 
+    document.getElementById(screenId).classList.add('active'); 
+
+    const cornerTL = document.getElementById('corner-tl'); 
+    const cornerBR = document.getElementById('corner-br'); 
+    if (screenId === 'screen-passcode') { 
+      cornerTL.style.display = 'none'; 
+      cornerBR.style.display = 'none'; 
+    } else { 
+      cornerTL.style.display = 'block'; 
+      cornerBR.style.display = 'block'; 
+    } 
+  } 
+
+  // Audio playback for "Rakhlo Tum Chupaake"
+  const birthdayAudio = document.getElementById('birthday-audio');
+  let isPlaying = false;
+
+  function stopCassetteAnimation() {
+    isPlaying = false;
+    const btn = document.getElementById('music-toggle-btn');
+    document.getElementById('reel-left').classList.remove('spinning');
+    document.getElementById('reel-right').classList.remove('spinning');
+    btn.textContent = '▶ Play Rakhlo Tum Chupaake';
+  }
+
+  function toggleBirthdaySong() {
+    const btn = document.getElementById('music-toggle-btn');
+    const reelL = document.getElementById('reel-left');
+    const reelR = document.getElementById('reel-right');
+
+    if (isPlaying) {
+      birthdayAudio.pause();
+      stopCassetteAnimation();
+      btn.textContent = '▶ Play Rakhlo Tum Chupaake';
+      return;
+    }
+
+    birthdayAudio.play().then(() => {
+      isPlaying = true;
+      btn.textContent = '⏸ Pause Song';
+      reelL.classList.add('spinning');
+      reelR.classList.add('spinning');
+    }).catch((error) => {
+      console.error('Could not play the audio file:', error);
+      alert('Audio file not found. Put "rakhlo-tum-chupaake.mp3" in the same folder as this HTML file.');
+    });
+  }
+
+  birthdayAudio.addEventListener('ended', stopCassetteAnimation);
+  birthdayAudio.addEventListener('pause', () => {
+    if (isPlaying) stopCassetteAnimation();
+  });
+
+</script> 
+</body> 
+</html>
